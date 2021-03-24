@@ -4,13 +4,17 @@
     <div class="navbarlist">
       <template v-if="$store.state.isAuthenticated">
         <router-link to="/dashboard">Dashboard</router-link>
+        <div class="items">
+          <router-link to="/dashboard/my-account">MyAccount</router-link>
+          <button @click="logout()" id="log-out">LogOut</button>
+        </div>
       </template>
 
       <template v-else>
         <router-link to="/">Home</router-link>
         <div class="items">
           <router-link to="/sign-up" id="sign-up"><strong>Sign up</strong></router-link>
-          <router-link to="/log-in" id="log-in"><strong>Log in</strong></router-link> 
+          <router-link to="/log-in" id="log-in"><strong>Log in</strong></router-link>
         </div>
       </template>
     </div>
@@ -38,6 +42,27 @@
       } else {
         axios.defaults.headers.common['Authorization'] = ''
       }
+    },
+    methods: {
+      logout() {
+        axios
+            .post("/api/v1/token/logout")
+            .then(response => {
+                axios.defaults.headers.common['Authorization'] = ''
+                localStorage.removeItem('token')
+                this.$store.commit('removeToken')
+                this.$router.push('/')
+            })
+            .catch(error => {
+                if (error.response) {
+                    console.log(JSON.stringify(error.response.data))
+                } else if (error.message) {
+                    console.log(JSON.stringify(error.message))
+                } else {
+                    console.log(JSON.stringify(error))
+                }
+            })
+        }
     }
   }
 </script>
@@ -53,6 +78,14 @@
 }
 
 #log-in {
+  background-color: red;
+  border-radius: 5%;
+  padding: 4px 8px;
+  color: white;
+  text-decoration: none;
+}
+
+#log-out {
   background-color: red;
   border-radius: 5%;
   padding: 4px 8px;
