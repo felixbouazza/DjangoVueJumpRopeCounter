@@ -4,6 +4,7 @@
     <div class="navbarlist">
       <template v-if="$store.state.isAuthenticated">
         <router-link to="/dashboard">Dashboard</router-link>
+        <router-link to="/dashboard/sessions">Sessions</router-link>
         <div class="items">
           <router-link to="/dashboard/my-account">MyAccount</router-link>
           <button @click="logout()" id="log-out">LogOut</button>
@@ -22,6 +23,7 @@
   <section class="section">
     <router-view/>
   </section>
+
 
   <footer class="footer">
     <p>Copyright (c) 2021</p>

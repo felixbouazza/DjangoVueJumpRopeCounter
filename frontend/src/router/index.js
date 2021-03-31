@@ -4,6 +4,9 @@ import Dashboard from '../views/dashboard/Dashboard.vue'
 import SignUp from '../views/SignUp.vue'
 import LogIn from '../views/LogIn.vue'
 import MyAccount from '../views/dashboard/MyAccount.vue'
+import Sessions from "../views/dashboard/Sessions.vue"
+import Session from "../views/dashboard/Session.vue"
+
 
 import store from "../store"
 
@@ -43,6 +46,22 @@ const routes = [
     path: '/dashboard/my-account',
     name: 'MyAccount',
     component: MyAccount,
+    meta: {
+      requireLogin: true
+    }
+  },
+  {
+    path: '/dashboard/sessions',
+    name: 'Sessions',
+    component: Sessions,
+    meta: {
+      requireLogin: true
+    }
+  },
+  {
+    path: '/dashboard/session/:id',
+    name: 'Session',
+    component: Session,
     meta: {
       requireLogin: true
     }
