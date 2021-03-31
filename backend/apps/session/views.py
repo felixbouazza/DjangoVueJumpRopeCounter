@@ -1,6 +1,3 @@
-import re
-from django.shortcuts import render
-
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework import viewsets
@@ -9,15 +6,14 @@ from .serializers import SessionSerializer
 from .models import Session
 
 import base64
-import cv2
-import pickle
-import codecs
 from PIL import Image
 import io
 import numpy as np
-import re
-
 import skimage
+
+from .detection import pose_estimation
+import matplotlib.pyplot as plt
+import cv2 as cv
 
 
 class SessionViewSet(viewsets.ModelViewSet):
@@ -30,12 +26,16 @@ class SessionViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def load_frame(request):
-    image64 = request.data['image']
-    pixels = decode(image64)
 
-    output = encode(pixels)
+    image64 = request.data['image']
+
+    # Decode base 64 string
+    frame = decode(image64)
+
+    pose = pose_estimation(frame)
+
     return Response({
-        "image": "data:image/png;base64," + output
+        "neckPoint": pose
     })
 
 
@@ -48,7 +48,7 @@ def encode(image):
 
     # encode bytes to base64 string
     base64_str = str(base64.b64encode(bytes_data), 'utf-8')
-    return base64_str
+    return "data:image/png;base64," + base64_str
 
 
 def decode(image64):
