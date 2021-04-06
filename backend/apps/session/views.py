@@ -15,6 +15,9 @@ from .detection import pose_estimation
 import matplotlib.pyplot as plt
 import cv2 as cv
 
+from csv import writer
+from .utils.counting import counting_jump_on_last_second
+
 
 class SessionViewSet(viewsets.ModelViewSet):
     serializer_class = SessionSerializer
@@ -27,15 +30,24 @@ class SessionViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 def load_frame(request):
 
-    image64 = request.data['image']
+    frame = request.data['frame']
+    jumpCounter = request.data['jumpCounter']
+    lastSecondData = request.data['lastSecondData']
 
     # Decode base 64 string
-    frame = decode(image64)
+    frame = decode(frame)
 
-    pose = pose_estimation(frame)
+    neckPoint = pose_estimation(frame)
+
+    if neckPoint == 0:
+        pass
+    else:
+        lastSecondData, jumpCounter = [counting_jump_on_last_second(
+            neckPoint, lastSecondData, jumpCounter)[k] for k in ('lastSecondData', 'jumpCounter')]
 
     return Response({
-        "neckPoint": pose
+        "jumpCounter": jumpCounter,
+        "lastSecondData": lastSecondData
     })
 
 

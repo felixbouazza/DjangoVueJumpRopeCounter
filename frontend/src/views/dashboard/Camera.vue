@@ -1,7 +1,6 @@
 <template>
   <div>
-    <img>
-    <button id="save">Save</button>
+    <p id="jumpCounter"></p>
   </div>
 </template>
 
@@ -15,45 +14,36 @@ export default {
     const script = function (p5) {    
       
       let video;
-      let img = document.getElementsByTagName("img")
-      let save = document.getElementById("save")
+      let jumpCounterElement = document.getElementById("jumpCounter")
+
+      let lastSecondData = []
+      let jumpCounter = 0
 
       // Configuration
       p5.setup = () => {    
-        // p5.noCanvas()
+        p5.noCanvas()
+        p5.frameRate(5);
         video = p5.createCapture(p5.VIDEO)
-        // video.hide()
-
-        save.addEventListener("click", () => {
-          video.loadPixels()
-          let data = {
-              "image": video.canvas.toDataURL()
-          }
-          axios.post("/api/v1/send_frame/", data)
-              .then(response => {
-                  console.log(response.data.neckPoint)
-              })
-              .catch(error => {
-                  console.log(error)
-              })
-          })
       }
 
-      // For each frame
-      // p5.draw = () => {
-      //   video.loadPixels()
-      //   let data = {
-      //       "image": video.canvas.toDataURL()
-      //   }
-      //   axios.post("/api/v1/send_frame/", data)
-      //       .then(response => {
-      //           // img.src = response.data.image
-      //           console.log(response.data.neckPoint)
-      //       })
-      //       .catch(error => {
-      //           console.log(error)
-      //       })
-      // }
+      p5.draw = () => {
+        video.loadPixels()
+        let data = {
+            "frame": video.canvas.toDataURL(),
+            "lastSecondData": lastSecondData,
+            "jumpCounter": jumpCounter
+        }
+        axios.post("/api/v1/load_frame/", data)
+            .then(response => {
+                lastSecondData = response.data.lastSecondData
+                jumpCounter = response.data.jumpCounter
+                jumpCounterElement.innerText = jumpCounter
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        
+      }
     }
     // Instance mode
     new P5(script)
@@ -62,5 +52,8 @@ export default {
 </script>
 
 <style>
-
+#jumpCounter {
+  color: red;
+  font-size: 80px;
+}
 </style>

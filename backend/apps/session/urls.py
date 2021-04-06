@@ -8,5 +8,5 @@ router.register("sessions", SessionViewSet, basename="sessions")
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('send_frame/', load_frame, name="load_frame"),
+    path('load_frame/', load_frame, name="load_frame"),
 ]
